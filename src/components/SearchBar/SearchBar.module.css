@@ -1,0 +1,26 @@
+.searchform {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+.searchinput {
+  display: flex;
+  width: 272px;
+  height: 40px;
+  padding: 8px 0 8px 16px;
+  border: 1px solid #808080;
+  border-radius: 4px;
+}
+.searchinput:hover {
+  border: 1px solid #000;
+}
+.searchinput:active {
+  border: 1px solid #4e75ff;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: #2e2f42;
+}

@@ -1,25 +1,25 @@
-
-import Modal from 'react-modal';
-import PropTypes from 'prop-types';
+import Modal from "react-modal";
+import PropTypes from "prop-types";
+import css from "./ImageModal.module.css";
 
 function ImageModal({ isOpen, onClose, image }) {
   if (!image) return null;
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
-      <div>
+      <div className={css.reactmodalportal}>
         <img src={image.urls.regular} alt={image.alt_description} />
-        <p>{image.description}</p>
-        <p>Likes: {image.likes}</p>
-        <p>By: {image.user.name}</p>
+        <p className={css.gallerytitle}>{image.description}</p>
+        <p className={css.gallerytitle}>Likes: {image.likes}</p>
+        <p className={css.gallerytitle}>By: {image.user.name}</p>
       </div>
     </Modal>
   );
 }
 ImageModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,      
-  onClose: PropTypes.func.isRequired,     
-  image: PropTypes.shape({                
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  image: PropTypes.shape({
     urls: PropTypes.shape({
       regular: PropTypes.string.isRequired,
     }).isRequired,

@@ -1,40 +1,36 @@
-import { useState } from "react";
-import { toast } from "react-hot-toast";
-import PropTypes from "prop-types";
+import toast from "react-hot-toast";
+import { Field, Form, Formik } from "formik";
+
 import css from "./SearchBar.module.css";
 
+const initialValues = { query: "" };
+
 const SearchBar = ({ onSubmit }) => {
-  const [query, setQuery] = useState("");
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    if (query.trim() === "") {
-      toast.error("Please enter a search term!");
-      return;
-    }
-    onSubmit(query);
-    setQuery("");
-  };
-
   return (
-    <header>
-      <form className={css.searchform} onSubmit={handleSubmit}>
-        <input
-          className={css.searchinput}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search images and photos"
+    <Formik
+      initialValues={initialValues}
+      onSubmit={(values, actions) => {
+        if (!values.query) {
+          toast.error("Please enter the value in the search field");
+          return;
+        }
+        onSubmit(values.query);
+        actions.resetForm();
+      }}
+    >
+      <Form className={css.searchform}>
+        <Field
+          className={css.searchInput}
+          name="query"
+          type="search"
           autoComplete="off"
           autoFocus
+          placeholder="Search images and photos"
         />
         <button type="submit">Search</button>
-      </form>
-    </header>
+      </Form>
+    </Formik>
   );
 };
-SearchBar.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
+
 export default SearchBar;

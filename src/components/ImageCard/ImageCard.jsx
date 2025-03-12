@@ -1,24 +1,14 @@
-import PropTypes from "prop-types";
 import css from "./ImageCard.module.css";
-const ImageCard = ({ image, openModal }) => {
+
+const ImageCard = ({ alt_description, urls, updateModalStateData }) => {
   return (
-    <div className={css.card} onClick={() => openModal(image)}>
-      <img
-        className={css.galleryimg}
-        src={image.urls.small}
-        alt={image.alt_description}
-      />
+    <div
+      className={css.card}
+      onClick={() => updateModalStateData(urls.regular, alt_description)}
+    >
+      <img className={css.cardImage} src={urls.small} alt={alt_description} />
     </div>
   );
 };
-ImageCard.propTypes = {
-  image: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    urls: PropTypes.shape({
-      small: PropTypes.string.isRequired,
-    }).isRequired,
-    alt_description: PropTypes.string,
-  }).isRequired,
-  openModal: PropTypes.func.isRequired,
-};
+
 export default ImageCard;

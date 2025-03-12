@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import SearchBar from "./components/SearchBar/SearchBar";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
@@ -6,110 +6,100 @@ import Loader from "./components/Loader/Loader";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
 import ImageModal from "./components/ImageModal/ImageModal";
-import toast, { Toaster } from "react-hot-toast";
-import { fetchImages } from "./services/api";
-import Modal from "react-modal";
-Modal.setAppElement("#root"); // Імпортуємо функцію з api.js
+import { Toaster } from "react-hot-toast";
+import fetchImages from "./services/api";
 
 function App() {
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [totalPages, setTotalPages] = useState(0); // Загальна кількість сторінок
-  const MAX_IMAGES = 50;
+  const [queryValue, setQueryValue] = useState("");
+  const [gallery, setGallery] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  // const [maxImages, setMaxImages] = useState(50);
 
-  // Функція для завантаження зображень
-  const loadImages = async (query, page) => {
-    if (images.length >= MAX_IMAGES) return; // Лімітуємо до 50 зображень
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [modalImage, setModalImage] = useState("");
+  const [altDescription, setAltDescription] = useState("");
 
-    setLoading(true);
-    setError(null);
+  const ref = useRef();
 
-    try {
-      const data = await fetchImages(query, page); // Викликаємо функцію з api.js
-
-      // Фільтруємо горизонтальні зображення
-      const horizontalImages = data.images.filter(
-        (image) => image.width > image.height
-      );
-
-      // Додаємо нові зображення, але не перевищуємо ліміт MAX_IMAGES
-      setImages((prevImages) => {
-        const combinedImages = [...prevImages, ...horizontalImages];
-        return combinedImages.length > MAX_IMAGES
-          ? combinedImages.slice(0, MAX_IMAGES)
-          : combinedImages;
-      });
-
-      setTotalPages(data.totalPages); // Оновлюємо кількість сторінок
-    } catch (error) {
-      setError("Failed to fetch images");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Обробник пошукового запиту
-  const handleSearchSubmit = (query) => {
-    if (query.trim() === "") {
-      toast.error("Please enter a search term!");
-      return;
-    }
-    setQuery(query);
-    setPage(1);
-    setImages([]); // Очищаємо зображення для нового пошуку
-    loadImages(query, 1); // Завантажуємо зображення для нового запиту
-  };
-
-  // Обробник натискання на кнопку "Load more"
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    loadImages(query, nextPage); // Завантажуємо зображення для наступної сторінки
-  };
-
-  // Відкриття модалки зображення
-  const openModal = (image) => {
-    setSelectedImage(image);
-    setIsModalOpen(true);
-  };
-
-  // Закриття модалки
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedImage(null);
-  };
-
-  // Викликаємо функцію для завантаження зображень при зміні запиту
   useEffect(() => {
-    if (query) {
-      loadImages(query, 1); // Завантажуємо зображення для початкової сторінки
-    }
-  }, [query]);
+    if (queryValue === "") return;
+
+    const handleSearch = async () => {
+      try {
+        setIsLoading(true);
+        setIsError(false);
+        const data = await fetchImages(queryValue, page);
+        console.log("data: ", data);
+        if (data.total === 0) return;
+
+        setGallery((prevGallery) => {
+          return [...prevGallery, ...data.results];
+        });
+      } catch (error) {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    handleSearch();
+  }, [page, queryValue]);
+
+  useEffect(() => {
+    if (page === 1) return;
+
+    ref.current.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [page, gallery]);
+
+  const handleQuery = (newQuery) => {
+    setQueryValue(newQuery);
+    setGallery([]);
+    setPage(1);
+  };
+
+  const handleLoadMore = () => {
+    setPage(page + 1);
+  };
+
+  const isActive = useMemo(() => page === totalPages, [page, totalPages]);
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const updateModalStateData = (src, alt) => {
+    setModalImage(src);
+    setAltDescription(alt);
+  };
 
   return (
-    <div>
-      <SearchBar onSubmit={handleSearchSubmit} />
-      {error && <ErrorMessage message={error} />}
-      <ImageGallery images={images} openModal={openModal} />
-
-      {loading && <Loader />}
-
-      {/* Кнопка Load More з'являється, якщо є результати і ще є сторінки для завантаження */}
-      {!loading && images.length > 0 && page < totalPages && (
-        <LoadMoreBtn onClick={handleLoadMore} />
+    <div ref={ref}>
+      <SearchBar onSubmit={handleQuery} />
+      {gallery.length > 0 && (
+        <ImageGallery
+          gallery={gallery}
+          openModal={openModal}
+          updateModalStateData={updateModalStateData}
+        />
       )}
-
+      {isLoading && <Loader />}
+      {isError && <ErrorMessage />}
+      {gallery.length > 0 && !isLoading && !isError && (
+        <LoadMoreBtn handleLoadMore={handleLoadMore} isActive={isActive} />
+      )}
       <ImageModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        image={selectedImage}
+        modalIsOpen={modalIsOpen}
+        closeModal={closeModal}
+        src={modalImage}
+        alt={altDescription}
       />
-      <Toaster />
+      <Toaster position="top-right" reverseOrder={true} />
     </div>
   );
 }

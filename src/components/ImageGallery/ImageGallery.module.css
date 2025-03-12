@@ -1,9 +1,9 @@
-.listgallery {
+.gallery {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
   margin-bottom: 32px;
 }
 .gallerycard {
-  width: calc((100% - 48px) / 3);
+  width: calc((100% - 72px) / 4);
 }

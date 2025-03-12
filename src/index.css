@@ -45,24 +45,51 @@ li {
   list-style: none;
 }
 button {
-  display: block;
-  border-radius: 8px;
-  padding: 8px 16px;
-  width: 91px;
-  background-color: #4e75ff;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 1.5;
-  letter-spacing: 0.04em;
-  color: #fff;
-  border: none;
+  font-size: 1.5rem; /* Розмір шрифта, як в інпуті */
+  padding: 12px 20px; /* Відступи всередині кнопки */
+  border: 2px solid #ff6347; /* Така ж яскрава рамка, як і в інпуті */
+  border-radius: 8px; /* Заокруглені кути */
+  background-color: rgb(235, 230, 230); /* Яскравий фон, як у інпута */
+  color: #333; /* Колір тексту кнопки */
+  cursor: pointer; /* Курсор при наведенні */
+  transition: all 0.3s ease; /* Плавні переходи */
 }
+
+/* Стилі для кнопки при наведенні */
 button:hover {
-  background-color: #6c8cff;
+  background-color: #ff6347; /* Зміна фону на помаранчево-червоний */
+  border-color: #ff4500; /* Зміна кольору рамки при наведенні */
+  color: white; /* Зміна кольору тексту на білий при наведенні */
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+/* Стилі для кнопки при фокусі (коли кнопка активна) */
+button:focus {
+  outline: none; /* Вимикаємо стандартну обводку при фокусі */
+  box-shadow: 0 0 5px 3px rgba(255, 99, 71, 0.5); /* Легка тінь для фокусу */
+}
+input {
+  font-size: 1.5rem; /* Великий шрифт */
+  padding: 12px 20px; /* Великі відступи для комфортного введення */
+  border: 2px solid #ff6347; /* Яскрава рамка */
+  border-radius: 8px; /* Заокруглені кути */
+  background-color: rgb(235, 230, 230); /* Яскравий фон */
+  color: #333; /* Колір тексту */
+  transition: all 0.3s ease; /* Плавні переходи при наведенні */
+  width: 100%; /* Розтягується на всю ширину контейнера */
+  max-width: 400px; /* Обмеження максимального розміру */
+}
+
+/* Стилі для інпута при наведенні */
+input:hover {
+  border-color: #ff4500; /* Зміна кольору рамки при наведенні */
+  background-color: #fff; /* Зміна фону */
+}
+
+/* Стилі для інпута при фокусі (коли він активний) */
+input:focus {
+  border-color: #ff4500; /* Зміна кольору рамки при фокусі */
+  background-color: #fff; /* Зміна фону при фокусі */
+  outline: none; /* Вимикає стандартну обводку при фокусі */
 }
 
 @media (prefers-color-scheme: light) {

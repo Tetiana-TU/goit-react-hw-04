@@ -16,13 +16,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
-  // const [maxImages, setMaxImages] = useState(50);
 
   const [modalIsOpen, setIsOpen] = useState(false);
   const [modalImage, setModalImage] = useState("");
   const [altDescription, setAltDescription] = useState("");
 
   const ref = useRef();
+  const maxImages = 50;
 
   useEffect(() => {
     if (queryValue === "") return;
@@ -36,8 +36,13 @@ function App() {
         if (data.total === 0) return;
 
         setGallery((prevGallery) => {
-          return [...prevGallery, ...data.results];
+          const updatedGallery = [...prevGallery, ...data.results];
+          if (updatedGallery.length > maxImages) {
+            return updatedGallery.slice(0, maxImages);
+          }
+          return updatedGallery;
         });
+        setTotalPages(data.total_pages);
       } catch (error) {
         setIsError(true);
       } finally {
